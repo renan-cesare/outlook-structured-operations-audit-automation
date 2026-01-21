@@ -1,4 +1,5 @@
 from datetime import datetime
+
 import pandas as pd
 
 from .config import AppConfig, get
@@ -8,82 +9,34 @@ from .logging_utils import make_logger
 from .outlook_client import OutlookClient
 
 
-def build_email_body(
+def load_html_template(path: str) -> str:
+    with open(path, "r", encoding="utf-8", errors="ignore") as f:
+        return f.read()
+
+
+def build_email_body_from_template(
+    template_html: str,
     nome_assessor: str,
     nome_cliente: str,
+    cod_cliente: str,
     estrutura: str,
     ativo: str,
     alocacao_pct: str,
     token: str,
 ) -> str:
-    # Template mais completo (sanitizado), alinhado ao modelo que você usava.
-    # Obs.: Mantém placeholders e campos de resposta para o assessor preencher.
-    return f"""
-Prezado(a) {nome_assessor},
-
-Estamos entrando em contato no âmbito de processo de auditoria interna referente à alocação da operação estruturada **{estrutura}**, vinculada ao ativo **{ativo}**, realizada na carteira do cliente **{nome_cliente}**.
-
-A referida alocação representa aproximadamente **{alocacao_pct}%** do portfólio do cliente. Solicitamos, portanto, seu retorno com o preenchimento das informações abaixo, para conclusão do processo de auditoria.
-
-================================================================================
-SEÇÃO 1 – CONTEXTO E PERFIL DO CLIENTE
-1.1) Qual o contexto do cliente e objetivo da recomendação (horizonte, necessidade, perfil)?
-R:
-[______________________________________________]
-
-1.2) Houve alguma restrição/condição específica considerada (liquidez, tolerância a perdas, prazo, etc.)?
-R:
-[______________________________________________]
-
-================================================================================
-SEÇÃO 2 – PROCESSO DE VENDA E COMUNICAÇÃO
-2.1) Descreva detalhadamente o processo de venda desta operação (abordagem, explicação da mecânica e riscos):
-R:
-[______________________________________________]
-
-2.2) Como foram apresentados os principais riscos (cenários, perdas possíveis, marcação a mercado, vencimento, etc.)?
-R:
-[______________________________________________]
-
-2.3) Houve comunicação por escrito e/ou registro de aceite? Onde?
-R:
-[______________________________________________]
-
-================================================================================
-SEÇÃO 3 – JUSTIFICATIVA PARA A ALOCAÇÃO
-3.1) Qual foi o racional para alocar essa operação na carteira do cliente?
-R:
-[______________________________________________]
-
-3.2) Quais alternativas foram consideradas e por que esta foi escolhida?
-R:
-[______________________________________________]
-
-3.3) Como foi definida a quantidade/alocação (por que {alocacao_pct}% do PL)?
-R:
-[______________________________________________]
-
-================================================================================
-SEÇÃO 4 – ADEQUAÇÃO E GOVERNANÇA (SUITABILITY / CONTROLES)
-4.1) Em sua avaliação, a operação é adequada ao perfil e objetivo do cliente? Justifique.
-R:
-[______________________________________________]
-
-4.2) Existe algum ponto de atenção que você considera relevante mencionar para registro?
-R:
-[______________________________________________]
-
-================================================================================
-Observações adicionais (se aplicável):
-[______________________________________________]
-
-Prazo: solicitamos devolutiva em até **3 (três) dias úteis**, para finalizarmos o processo de auditoria.
-
-Atenciosamente,
-Equipe de Auditoria (Sanitized)
-
-{token}
-""".lstrip()
+    """
+    Monta o corpo do e-mail a partir do template HTML (sanitizado).
+    Mantém o conteúdo do questionário em HTML e injeta os campos dinâmicos.
+    """
+    return template_html.format(
+        nome_assessor=nome_assessor,
+        nome_cliente=nome_cliente,
+        cod_cliente=cod_cliente,
+        estrutura=estrutura,
+        ativo=ativo,
+        alocacao_pct=alocacao_pct,
+        token=token,
+    )
 
 
 def run_dispatch(cfg: AppConfig, dry_run: bool, display_only: bool) -> int:
@@ -93,6 +46,9 @@ def run_dispatch(cfg: AppConfig, dry_run: bool, display_only: bool) -> int:
     professionals_path = get(cfg, "paths", "professionals_xlsx")
     history_path = get(cfg, "paths", "history_xlsx")
     history_sheet = get(cfg, "paths", "history_sheet", default="Auditoria De Estruturadas")
+
+    # NOVO: template HTML
+    email_body_html_path = get(cfg, "paths", "email_body_html", default="templates/email_body.html")
 
     send_delay = int(get(cfg, "outlook", "send_delay_seconds", default=3))
     sent_max = int(get(cfg, "outlook", "search_sent_max_items", default=300))
@@ -117,6 +73,13 @@ def run_dispatch(cfg: AppConfig, dry_run: bool, display_only: bool) -> int:
         assert_files_closed([operations_path, professionals_path, history_path])
     except Exception as e:
         log.error(str(e))
+        return 2
+
+    # Carrega template HTML uma única vez
+    try:
+        template_html = load_html_template(email_body_html_path)
+    except Exception as e:
+        log.error(f"Falha ao carregar template HTML em '{email_body_html_path}': {e}")
         return 2
 
     base = pd.read_excel(professionals_path)
@@ -174,9 +137,11 @@ def run_dispatch(cfg: AppConfig, dry_run: bool, display_only: bool) -> int:
             token = f"#audit_token:{cod_cliente}_{datetime.now().strftime('%Y%m%d%H%M%S')}"
             subject = subject_template.format(nome_cliente=nome_cliente, cod_cliente=cod_cliente)
 
-            body = build_email_body(
+            body_html = build_email_body_from_template(
+                template_html=template_html,
                 nome_assessor=nome_assessor,
-                nome_cliente=nome_cliente,
+                nome_cliente=str(nome_cliente),
+                cod_cliente=str(cod_cliente),
                 estrutura=str(estrutura),
                 ativo=str(ativo),
                 alocacao_pct=str(alocacao_pct),
@@ -187,8 +152,22 @@ def run_dispatch(cfg: AppConfig, dry_run: bool, display_only: bool) -> int:
                 log.info(f"[DRY-RUN] Para: {email_assessor} | CC: {email_lider} | Cliente {cod_cliente}")
                 continue
 
-            outlook.send_mail(email_assessor, email_lider, subject, body, display_only=display_effective)
-            ids = outlook.find_sent_ids_by_subject_and_token(subject, token, delay_seconds=send_delay, max_items=sent_max)
+            # IMPORTANTE: enviar como HTML
+            outlook.send_mail(
+                to=email_assessor,
+                cc=email_lider,
+                subject=subject,
+                body=body_html,
+                display_only=display_effective,
+                is_html=True,
+            )
+
+            ids = outlook.find_sent_ids_by_subject_and_token(
+                subject,
+                token,
+                delay_seconds=send_delay,
+                max_items=sent_max,
+            )
 
             store.append_dispatch_record(
                 operation_row=row.to_dict(),

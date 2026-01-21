@@ -1,0 +1,181 @@
+<html>
+  <body style="font-family: Arial, sans-serif; font-size: 12pt; color: #000000;">
+
+    <p>Prezado(a) <b>{nome_assessor}</b>,</p>
+
+    <p>
+      Estamos entrando em contato no âmbito de processo de <b>auditoria interna</b> referente à alocação da
+      operação estruturada <b>{estrutura}</b>, vinculada ao ativo <b>{ativo}</b>, realizada na carteira do
+      cliente <b>{nome_cliente}</b> (cód. {cod_cliente}).
+    </p>
+
+    <p>
+      A referida alocação representa aproximadamente <b>{alocacao_pct}%</b> do portfólio do cliente, o que pode
+      indicar um eventual desalinhamento com as diretrizes padrão de alocação recomendadas pelo escritório.
+      Solicitamos, portanto, seu retorno com o preenchimento das informações abaixo.
+    </p>
+
+    <hr/>
+
+    <h3>SEÇÃO 1 – PROCESSO DE VENDA</h3>
+
+    <p>
+      Descreva detalhadamente o processo de venda desta operação estruturada, incluindo os seguintes pontos:
+    </p>
+
+    <ul>
+      <li>Abordagem inicial ao cliente</li>
+      <li>Estratégia de apresentação da operação</li>
+      <li>Explicação dos riscos envolvidos</li>
+      <li>Estrutura da operação e sua mecânica</li>
+      <li>Expectativas de retorno alinhadas com o cliente</li>
+    </ul>
+
+    <p><b>R:</b><br/>______________________________________________</p>
+
+    <p>
+      Houve algum tipo de pressão externa ou interna (como metas comerciais) que influenciou a decisão de alocação
+      desta operação ao cliente?
+    </p>
+
+    <p>
+      ( ) Sim<br/>
+      ( ) Não
+    </p>
+
+    <p>
+      Se sim, por favor, detalhe:<br/>
+      <b>R:</b><br/>______________________________________________
+    </p>
+
+    <hr/>
+
+    <h3>SEÇÃO 2 – JUSTIFICATIVA PARA ALOCAÇÃO</h3>
+
+    <p>
+      Qual foi o racional para alocar essa operação na carteira do cliente, considerando as recomendações internas
+      do escritório?
+    </p>
+
+    <p><b>R:</b><br/>______________________________________________</p>
+
+    <p>
+      Como foi avaliada a compatibilidade da operação com o perfil de risco e os objetivos financeiros do cliente?
+      <br/>
+      (Ex.: horizonte de investimento, necessidade de liquidez, tolerância a risco etc.)
+    </p>
+
+    <p><b>R:</b><br/>______________________________________________</p>
+
+    <p>
+      Na aba “Configurações de Clientes” do Portal, qual base de campanhas foi considerada como referência para
+      essa alocação?
+    </p>
+
+    <p>
+      ( ) Net Manchester<br/>
+      ( ) PL Declarado<br/>
+      ( ) PL Estimado XP<br/>
+      ( ) Outro – Qual valor estimado? [__________]
+    </p>
+
+    <p>
+      Como você classificaria o conhecimento técnico do cliente sobre operações estruturadas e o mercado
+      financeiro?
+    </p>
+
+    <p>
+      ( ) Nenhum<br/>
+      ( ) Básico<br/>
+      ( ) Intermediário<br/>
+      ( ) Avançado
+    </p>
+
+    <p>
+      Se possível, mencione elementos que justifiquem essa avaliação (histórico de investimentos, reuniões
+      prévias, perfil de investidor etc.):
+    </p>
+
+    <p><b>R:</b><br/>______________________________________________</p>
+
+    <hr/>
+
+    <h3>SEÇÃO 3 – COMUNICAÇÃO E CONSENTIMENTO DO CLIENTE</h3>
+
+    <p>
+      A iniciativa da alocação partiu do assessor ou foi uma demanda direta do cliente?
+      <br/>
+      Como e quando o cliente foi informado sobre os detalhes da operação? Houve consentimento formal (escrito,
+      gravado ou documentado)?
+    </p>
+
+    <p><b>R:</b><br/>______________________________________________</p>
+
+    <p>
+      Existe documentação que comprove a comunicação e o consentimento do cliente para essa alocação?
+    </p>
+
+    <p>
+      ( ) Sim<br/>
+      ( ) Não
+    </p>
+
+    <p>
+      Se sim, por favor, especifique os registros disponíveis (e-mails, gravações de reunião, prints, anotações
+      no CRM etc.):
+    </p>
+
+    <p><b>R:</b><br/>______________________________________________</p>
+
+    <p>
+      O cliente demonstrou compreensão efetiva dos riscos envolvidos na operação?
+    </p>
+
+    <p>
+      ( ) Sim&nbsp;&nbsp;&nbsp;( ) Não&nbsp;&nbsp;&nbsp;( ) Parcial
+    </p>
+
+    <p>
+      Se sim, como isso foi validado? (ex: perguntas durante a reunião, manifestações escritas, entre outros):
+    </p>
+
+    <p><b>R:</b><br/>______________________________________________</p>
+
+    <hr/>
+
+    <h3>OBSERVAÇÕES ADICIONAIS</h3>
+
+    <p>[Espaço aberto para qualquer consideração extra do assessor]</p>
+
+    <p><b>R:</b><br/>______________________________________________</p>
+
+    <hr/>
+
+    <p>
+      Solicitamos que este questionário seja preenchido e devolvido no prazo de até
+      <b>3 (três) dias úteis</b> a contar do recebimento deste e-mail.
+    </p>
+
+    <p>
+      Todas as informações prestadas serão tratadas com confidencialidade e utilizadas exclusivamente para fins
+      de controle interno e aprimoramento dos processos.
+    </p>
+
+    <p>
+      Agradecemos sua colaboração. Sua resposta é essencial para garantir a conformidade das operações e a
+      qualidade do atendimento prestado ao cliente.
+    </p>
+
+    <p>
+      Atenciosamente,<br/>
+      <b>Risco &amp; Compliance</b>
+    </p>
+
+    <hr/>
+
+    <p style="font-size: 10pt; color: #555555;">
+      <b>Token de rastreabilidade:</b> {token}
+    </p>
+
+  </body>
+</html>

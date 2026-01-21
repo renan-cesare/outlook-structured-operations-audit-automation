@@ -1,78 +1,93 @@
-# Outlook Structured Operations Audit Automation
 
-> Projeto profissional **sanitizado** de automação de auditoria operacional, utilizado em contexto real de backoffice / risco & compliance.
+Outlook Structured Operations Audit Automation
 
----
+Projeto profissional sanitizado de automação de auditoria operacional, utilizado em contexto real de backoffice / risco & compliance.
 
-## 📌 Contexto
+📌 Contexto
 
-Em ambientes corporativos do mercado financeiro, diversas operações precisam passar por **processos formais de auditoria interna**, incluindo:
+Em ambientes corporativos do mercado financeiro, diversas operações precisam passar por processos formais de auditoria interna, incluindo:
 
-* Contato com assessores responsáveis
-* Coleta de justificativas formais
-* Registro de evidências
-* Acompanhamento de respostas
-* Reenvio de cobranças quando não há retorno
+Contato com assessores responsáveis
 
-Este projeto automatiza **todo esse ciclo** de forma integrada ao **Microsoft Outlook** e planilhas Excel.
+Coleta de justificativas formais
 
-> ⚠️ Este repositório contém uma **versão sanitizada**:
->
-> * Sem nomes reais
-> * Sem e-mails reais
-> * Sem dados internos
-> * Sem estruturas proprietárias
+Registro de evidências
 
-Mas **preserva integralmente a lógica real do processo**.
+Acompanhamento de respostas
 
----
+Reenvio de cobranças quando não há retorno
 
-## 🚀 O que o sistema faz
+Este projeto automatiza todo esse ciclo de forma integrada ao Microsoft Outlook e planilhas Excel.
 
-### 1) Módulo de Envio (`dispatch`)
+⚠️ Este repositório contém uma versão sanitizada:
 
-* Lê planilha Excel de operações a serem auditadas
-* Lê base de dados de profissionais (assessores / líderes)
-* Gera e envia e-mails automaticamente via Outlook
-* Insere um **token único** no corpo do e-mail para rastreio
-* Localiza o e-mail enviado na pasta “Itens Enviados”
-* Captura e salva:
+Sem nomes reais
 
-  * ConversationID
-  * InternetMessageID
-  * EntryID
-* Registra tudo em uma **planilha de histórico**
+Sem e-mails reais
 
----
+Sem dados internos
 
-### 2) Módulo de Acompanhamento (`followup`)
+Sem estruturas proprietárias
 
-* Lê a planilha de histórico
-* Para cada envio:
+Mas preserva integralmente a lógica real do processo.
 
-  * Localiza o e-mail original pelo EntryID
-  * Busca respostas na caixa de entrada via ConversationID
-* Se encontrou resposta:
+🚀 O que o sistema faz
+1) Módulo de Envio (dispatch)
 
-  * Marca como **Respondido**
-  * Salva data e conteúdo da resposta
-* Se **não** encontrou:
+Lê planilha Excel de operações a serem auditadas
 
-  * Gera automaticamente uma **cobrança (reply)**
-  * Atualiza o status no histórico
+Lê base de dados de profissionais (assessores / líderes)
 
----
+Gera e envia e-mails automaticamente via Outlook
 
-## 🧱 Estrutura do Projeto
+Insere um token único no corpo do e-mail para rastreio
 
-```
-outlook-audit-automation/
+Localiza o e-mail enviado na pasta Itens Enviados
+
+Captura e salva:
+
+ConversationID
+
+InternetMessageID
+
+EntryID
+
+Registra tudo em uma planilha de histórico
+
+2) Módulo de Acompanhamento (followup)
+
+Lê a planilha de histórico
+
+Para cada envio:
+
+Localiza o e-mail original pelo EntryID
+
+Busca respostas na caixa de entrada via ConversationID
+
+Se encontrou resposta:
+
+Marca como Respondido
+
+Salva data e conteúdo da resposta
+
+Se não encontrou:
+
+Gera automaticamente uma cobrança (reply)
+
+Atualiza o status no histórico
+
+🧱 Estrutura do Projeto
+outlook-structured-operations-audit-automation/
 │
 ├── main.py
 ├── config.example.json
 ├── requirements.txt
 ├── README.md
 ├── LICENSE
+├── .gitignore
+│
+├── templates/
+│   └── email_body.html
 │
 └── src/
     └── outlook_audit/
@@ -84,92 +99,71 @@ outlook-audit-automation/
         ├── outlook_client.py
         ├── logging_utils.py
         └── file_lock.py
-```
+⚙️ Configuração
 
----
+Clone o repositório
 
-## ⚙️ Configuração
+Crie um arquivo:
 
-1. Clone o repositório
-2. Crie um arquivo:
-
-```
 config.json
-```
 
 Baseando-se em:
 
-```
 config.example.json
-```
 
-3. Ajuste os caminhos das planilhas e parâmetros.
+Ajuste os caminhos das planilhas e parâmetros conforme seu ambiente.
 
----
+⚠️ O arquivo config.json não deve ser versionado (já está no .gitignore).
 
-## ▶️ Como rodar
-
-Instalar dependências:
-
-```bash
+▶️ Como rodar
+Instalar dependências
 pip install -r requirements.txt
-```
-
-### Teste seguro (não envia e-mail):
-
-```bash
+Teste seguro (não envia e-mail)
 python main.py dispatch --dry-run
-```
-
-### Mostrar e-mails antes de enviar:
-
-```bash
+Mostrar e-mails antes de enviar
 python main.py dispatch --display-only
-```
-
-### Rodar acompanhamento:
-
-```bash
+Rodar acompanhamento (follow-up)
 python main.py followup --display-only
-```
+🛡️ Segurança e Confiabilidade
 
----
+O projeto:
 
-## 🛡️ Segurança
+Bloqueia planilhas abertas em uso
 
-* O projeto:
+Nunca sobrescreve histórico manualmente
 
-  * Bloqueia planilhas abertas em uso
-  * Nunca sobrescreve histórico manualmente
-  * Usa tokens únicos por envio
-* O `.gitignore` impede subir:
+Usa tokens únicos por envio
 
-  * config.json real
-  * planilhas reais
-  * logs
+O .gitignore impede subir:
 
----
+config.json real
 
-## 🧠 O que este projeto demonstra tecnicamente
+planilhas reais
 
-* Automação corporativa real
-* Integração com Outlook via COM
-* Controle de estado e histórico
-* Idempotência e rastreabilidade
-* Arquitetura modular
-* Separação de responsabilidades
-* Processamento de Excel com pandas
-* Padrões de projeto aplicados a backoffice / compliance
+logs
 
----
+🧠 O que este projeto demonstra tecnicamente
 
-## 📎 Observação importante
+Automação corporativa real
 
-Este projeto **não é um script de estudo**.
-Ele é a **formalização sanitizada de uma automação real de produção** usada em ambiente corporativo.
+Integração com Outlook via COM (pywin32)
 
----
+Controle de estado e histórico
 
-## 📄 Licença
+Idempotência e rastreabilidade
 
-MIT License.
+Arquitetura modular
+
+Separação de responsabilidades
+
+Processamento de Excel com pandas
+
+Padrões de projeto aplicados a backoffice / compliance
+
+📎 Observação importante
+
+Este projeto não é um script de estudo. Ele é a formalização sanitizada de uma automação real de produção usada em ambiente corporativo.
+
+📄 Licença
+
+MIT License

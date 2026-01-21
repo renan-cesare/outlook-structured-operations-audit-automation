@@ -1,73 +1,175 @@
 # Outlook Structured Operations Audit Automation
 
-> Bulk dispatch and follow-up automation for structured operations audit using Outlook and Excel.
+> Projeto profissional **sanitizado** de automação de auditoria operacional, utilizado em contexto real de backoffice / risco & compliance.
 
 ---
 
-## 📌 Visão Geral
+## 📌 Contexto
 
-Este projeto automatiza o envio e o acompanhamento de e-mails de **auditoria de operações estruturadas**, utilizando o Microsoft Outlook para comunicação e arquivos Excel como base de dados e trilha de auditoria.
+Em ambientes corporativos do mercado financeiro, diversas operações precisam passar por **processos formais de auditoria interna**, incluindo:
 
-Ele foi desenvolvido para suportar rotinas corporativas de auditoria nas quais diversos profissionais precisam, periodicamente, **confirmar ou validar operações**, garantindo:
+* Contato com assessores responsáveis
+* Coleta de justificativas formais
+* Registro de evidências
+* Acompanhamento de respostas
+* Reenvio de cobranças quando não há retorno
 
-- Rastreabilidade completa dos envios
-- Histórico centralizado
-- Controle de respostas
-- Ciclos de cobrança automatizados
+Este projeto automatiza **todo esse ciclo** de forma integrada ao **Microsoft Outlook** e planilhas Excel.
 
-> ⚠️ Este é um projeto **sanitizado e adaptado para portfólio**, baseado em uma automação real utilizada em ambiente corporativo. Nenhuma informação sensível, dado real de cliente ou regra proprietária está incluída neste repositório.
+> ⚠️ Este repositório contém uma **versão sanitizada**:
+>
+> * Sem nomes reais
+> * Sem e-mails reais
+> * Sem dados internos
+> * Sem estruturas proprietárias
 
----
-
-## 🎯 Objetivo
-
-Em muitos ambientes corporativos, processos de auditoria dependem de:
-
-- Envio manual de e-mails
-- Controle manual de quem respondeu e quem não respondeu
-- Reenvio manual de cobranças
-- Atualização manual de planilhas de controle
-
-Este projeto resolve esse problema fornecendo:
-
-- Envio em massa de e-mails via Outlook
-- Geração de token único por registro auditado
-- Registro automático de todos os envios em planilha de histórico
-- Processo automatizado de follow-up e cobrança
+Mas **preserva integralmente a lógica real do processo**.
 
 ---
 
-## 🚀 Funcionalidades
+## 🚀 O que o sistema faz
 
-- Envio em massa de e-mails de auditoria via Microsoft Outlook
-- Geração de token único por registro para rastreabilidade
-- Registro de todos os envios em arquivo Excel de histórico
-- Automação de follow-up:
-  - Busca respostas no Outlook
-  - Marca registros como respondidos
-  - Reenvia solicitações quando não há resposta
-- Proteção contra uso simultâneo de arquivos Excel (evita corrupção de arquivos)
-- Configuração centralizada via arquivo JSON
-- Opção de:
-  - Apenas exibir os e-mails antes do envio
-  - Ou enviar automaticamente
+### 1) Módulo de Envio (`dispatch`)
+
+* Lê planilha Excel de operações a serem auditadas
+* Lê base de dados de profissionais (assessores / líderes)
+* Gera e envia e-mails automaticamente via Outlook
+* Insere um **token único** no corpo do e-mail para rastreio
+* Localiza o e-mail enviado na pasta “Itens Enviados”
+* Captura e salva:
+
+  * ConversationID
+  * InternetMessageID
+  * EntryID
+* Registra tudo em uma **planilha de histórico**
+
+---
+
+### 2) Módulo de Acompanhamento (`followup`)
+
+* Lê a planilha de histórico
+* Para cada envio:
+
+  * Localiza o e-mail original pelo EntryID
+  * Busca respostas na caixa de entrada via ConversationID
+* Se encontrou resposta:
+
+  * Marca como **Respondido**
+  * Salva data e conteúdo da resposta
+* Se **não** encontrou:
+
+  * Gera automaticamente uma **cobrança (reply)**
+  * Atualiza o status no histórico
 
 ---
 
 ## 🧱 Estrutura do Projeto
 
-```text
-outlook-structured-operations-audit-automation/
-  main.py
-  config.example.json
-  requirements.txt
-  README.md
-  src/
-    outlook_audit/
-      config.py
-      dispatch.py
-      followup.py
-      outlook_client.py
-      history_store.py
-      file_lock.py
-      logging_utils.py
+```
+outlook-audit-automation/
+│
+├── main.py
+├── config.example.json
+├── requirements.txt
+├── README.md
+├── LICENSE
+│
+└── src/
+    └── outlook_audit/
+        ├── __init__.py
+        ├── config.py
+        ├── dispatch.py
+        ├── followup.py
+        ├── history_store.py
+        ├── outlook_client.py
+        ├── logging_utils.py
+        └── file_lock.py
+```
+
+---
+
+## ⚙️ Configuração
+
+1. Clone o repositório
+2. Crie um arquivo:
+
+```
+config.json
+```
+
+Baseando-se em:
+
+```
+config.example.json
+```
+
+3. Ajuste os caminhos das planilhas e parâmetros.
+
+---
+
+## ▶️ Como rodar
+
+Instalar dependências:
+
+```bash
+pip install -r requirements.txt
+```
+
+### Teste seguro (não envia e-mail):
+
+```bash
+python main.py dispatch --dry-run
+```
+
+### Mostrar e-mails antes de enviar:
+
+```bash
+python main.py dispatch --display-only
+```
+
+### Rodar acompanhamento:
+
+```bash
+python main.py followup --display-only
+```
+
+---
+
+## 🛡️ Segurança
+
+* O projeto:
+
+  * Bloqueia planilhas abertas em uso
+  * Nunca sobrescreve histórico manualmente
+  * Usa tokens únicos por envio
+* O `.gitignore` impede subir:
+
+  * config.json real
+  * planilhas reais
+  * logs
+
+---
+
+## 🧠 O que este projeto demonstra tecnicamente
+
+* Automação corporativa real
+* Integração com Outlook via COM
+* Controle de estado e histórico
+* Idempotência e rastreabilidade
+* Arquitetura modular
+* Separação de responsabilidades
+* Processamento de Excel com pandas
+* Padrões de projeto aplicados a backoffice / compliance
+
+---
+
+## 📎 Observação importante
+
+Este projeto **não é um script de estudo**.
+Ele é a **formalização sanitizada de uma automação real de produção** usada em ambiente corporativo.
+
+---
+
+## 📄 Licença
+
+MIT License.

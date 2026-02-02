@@ -1,32 +1,29 @@
-# Python
+# === Python ===
 __pycache__/
-*.pyc
-*.pyo
-*.pyd
+*.py[codz]
 .venv/
 venv/
-.env
+ENV/
+env/
 
-# IDE / OS
-.vscode/
-.idea/
+# === OS / Editor ===
 .DS_Store
 Thumbs.db
+.vscode/
+.idea/
 
-# Local configs / secrets
+# === Secrets / Local config ===
+.env
 config.json
 
-# Local data / spreadsheets
+# === Project data (never commit real inputs/outputs) ===
 data/
-*.xlsx
-*.xls
-*.csv
-
-# Logs
+output/
 logs/
 *.log
+*.xlsx
+*.xls
 
-# Build / dist
-build/
-dist/
-*.egg-info/
+# Notes:
+# - Excel files here represent real operational/audit data
+# - Keep only templates and example configs versioned

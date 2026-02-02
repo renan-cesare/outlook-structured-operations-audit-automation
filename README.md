@@ -1,181 +1,158 @@
 # Outlook Structured Operations Audit Automation
 
-> Projeto profissional **sanitizado** de automação de auditoria operacional, utilizado em contexto real de backoffice / risco & compliance.
+Automação em Python para **auditoria operacional estruturada**, com **envio de e-mails via Outlook**, **captura de identificadores (IDs)**, **histórico em Excel** e **cobrança automática (follow-up)** baseada em status de resposta.
+
+> **English (short):** Python automation for structured operations audit workflows using Outlook, with ID tracking, Excel history, and automated follow-up.
 
 ---
 
-## 📌 Contexto
+## Principais recursos
 
-Em ambientes corporativos do mercado financeiro, diversas operações precisam passar por processos formais de auditoria interna, incluindo:
+* Automação de envio de e-mails via **Outlook (COM automation)**
+* Geração de mensagens a partir de **templates HTML**
+* Captura e persistência de **IDs de mensagens**
+* Registro estruturado de histórico em **Excel**
+* **Follow-up automático** para casos sem resposta
+* Controle de execução e rastreabilidade operacional
+* Separação clara entre:
 
-* Contato com assessores responsáveis
-* Coleta de justificativas formais
-* Registro de evidências
-* Acompanhamento de respostas
-* Reenvio de cobranças quando não há retorno
-
-Este projeto automatiza todo esse ciclo de forma integrada ao **Microsoft Outlook** e **planilhas Excel**.
-
-> ⚠️ Este repositório contém uma versão **sanitizada**:
->
-> * Sem nomes reais
-> * Sem e-mails reais
-> * Sem dados internos
-> * Sem estruturas proprietárias
->
-> Mas preserva integralmente a **lógica real do processo**.
+  * lógica de auditoria
+  * templates de comunicação
+  * histórico de controle
 
 ---
 
-## 🚀 O que o sistema faz
+## Diferença em relação a outros projetos similares
 
-### 1) Módulo de Envio (`dispatch`)
+Este projeto é focado em **auditoria operacional e cobrança estruturada**, enquanto outros fluxos de auditoria podem focar em **análise de desempenho**.
 
-* Lê planilha Excel de operações a serem auditadas
-* Lê base de dados de profissionais (assessores / líderes)
-* Gera e envia e-mails automaticamente via Outlook
-* Insere um **token único** no corpo do e-mail para rastreio
-* Localiza o e-mail enviado na pasta **Itens Enviados**
-* Captura e salva:
+Aqui, o objetivo principal é:
 
-  * `ConversationID`
-  * `InternetMessageID`
-  * `EntryID`
-* Registra tudo em uma planilha de **histórico**
-
-### 2) Módulo de Acompanhamento (`followup`)
-
-* Lê a planilha de histórico
-
-* Para cada envio:
-
-  * Localiza o e-mail original pelo `EntryID`
-  * Busca respostas na caixa de entrada via `ConversationID`
-
-* Se encontrou resposta:
-
-  * Marca como **Respondido**
-  * Salva data e conteúdo da resposta
-
-* Se **não** encontrou:
-
-  * Gera automaticamente uma **cobrança (reply)**
-  * Atualiza o status no histórico
+* garantir retorno operacional
+* registrar evidências de contato
+* automatizar cobranças recorrentes
+* manter histórico auditável de interações
 
 ---
 
-## 🧱 Estrutura do Projeto
+## Contexto
+
+Em rotinas de **operações, risco e compliance interno**, é comum a necessidade de:
+
+* envio estruturado de solicitações
+* identificação única de cada contato
+* acompanhamento de pendências
+* cobrança automática após prazos definidos
+
+Este projeto automatiza esse processo, reduzindo esforço manual e aumentando **controle, padronização e rastreabilidade**.
+
+---
+
+## Aviso importante (uso autorizado)
+
+Este repositório é apresentado como **exemplo técnico e portfólio**.
+
+* Utilize apenas **ambientes e contas autorizadas**
+* Não publique dados reais, e-mails corporativos ou informações sensíveis
+* Respeite políticas internas, LGPD e regras de uso do Outlook
+
+---
+
+## Estrutura do projeto
 
 ```text
-outlook-structured-operations-audit-automation/
-│
-├── main.py
-├── config.example.json
-├── requirements.txt
-├── README.md
-├── LICENSE
-├── .gitignore
-│
-├── templates/
-│   └── email_body.html
-│
-└── src/
-    └── outlook_audit/
-        ├── __init__.py
-        ├── config.py
-        ├── dispatch.py
-        ├── followup.py
-        ├── history_store.py
-        ├── outlook_client.py
-        ├── logging_utils.py
-        └── file_lock.py
+.
+├─ src/
+│  └─ outlook_audit/
+│     ├─ __init__.py
+│     ├─ app.py
+│     └─ dispatch.py
+├─ templates/
+│  └─ email_body.html
+├─ config.example.json
+├─ main.py
+├─ requirements.txt
+├─ LICENSE
+└─ README.md
 ```
 
 ---
 
-## ⚙️ Configuração
+## Requisitos
 
-1. Clone o repositório
-2. Crie um arquivo:
+* Python 3.10+
+* **Windows**
+* Microsoft Outlook instalado e configurado
 
-```text
-config.json
-```
-
-Baseando-se em:
-
-```text
-config.example.json
-```
-
-3. Ajuste os caminhos das planilhas e parâmetros conforme seu ambiente.
-
-> ⚠️ O arquivo `config.json` **não deve ser versionado** (já está no `.gitignore`).
+> Este projeto utiliza automação COM, sendo compatível apenas com ambiente Windows.
 
 ---
 
-## ▶️ Como rodar
-
-### Instalar dependências
+## Instalação
 
 ```bash
+python -m venv .venv
+
+# Windows
+.venv\\Scripts\\activate
+
 pip install -r requirements.txt
 ```
 
-### Teste seguro (não envia e-mail)
+---
+
+## Configuração
+
+Crie um arquivo local de configuração:
 
 ```bash
-python main.py dispatch --dry-run
+copy config.example.json config.json
 ```
 
-### Mostrar e-mails antes de enviar
+O arquivo de configuração define:
+
+* parâmetros de envio
+* caminhos de arquivos Excel
+* prazos de cobrança
+* regras de acompanhamento
+
+> O arquivo `config.json` deve permanecer fora do versionamento.
+
+---
+
+## Execução
 
 ```bash
-python main.py dispatch --display-only
+python main.py
 ```
 
-### Rodar acompanhamento (follow-up)
+O processo:
 
-```bash
-python main.py followup --display-only
-```
-
----
-
-## 🛡️ Segurança e Confiabilidade
-
-O projeto:
-
-* Bloqueia planilhas abertas em uso
-* Nunca sobrescreve histórico manualmente
-* Usa **tokens únicos por envio**
-* O `.gitignore` impede subir:
-
-  * `config.json` real
-  * planilhas reais
-  * logs
+* envia os e-mails iniciais
+* registra IDs e histórico
+* identifica pendências
+* executa cobranças automáticas conforme regras
 
 ---
 
-## 🧠 O que este projeto demonstra tecnicamente
+## Saídas geradas
 
-* Automação corporativa real
-* Integração com Outlook via COM (pywin32)
-* Controle de estado e histórico
-* Idempotência e rastreabilidade
-* Arquitetura modular
-* Separação de responsabilidades
-* Processamento de Excel com pandas
-* Padrões de projeto aplicados a backoffice / compliance
+* Histórico estruturado em Excel
+* Controle de pendências
+* Evidências de auditoria operacional
 
 ---
 
-## 📎 Observação importante
+## Sanitização de dados
 
-> Este projeto **não é um script de estudo**. Ele é a formalização sanitizada de uma automação real de produção usada em ambiente corporativo.
+Este repositório **não contém dados reais**.
+
+* Bases Excel reais devem permanecer fora do Git
+* Templates HTML podem ser versionados normalmente
+* Identificadores sensíveis são gerados apenas em tempo de execução
 
 ---
 
-## 📄 Licença
+## Licença
 
-MIT License
+MIT
